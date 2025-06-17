@@ -25,7 +25,7 @@ public class CategoryEntity {
     private Long id;
 
     @Column(unique = true)
-    private String categotyId;
+    private String categoryId;
 
     @Column(unique = true)
     private String name;

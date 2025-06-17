@@ -33,11 +33,17 @@ public class CategoryServiceImpl implements CategoryService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public void delete(String categoryId) {
+        CategoryEntity existingCategory = categoryRepository.findByCategoryId(categoryId)
+                .orElseThrow(()-> new RuntimeException("Category not found" + categoryId));
+        categoryRepository.delete(existingCategory);
+    }
 
 
     private CategoryResponse convertToResponse(CategoryEntity newCategory) {
         return CategoryResponse.builder()
-                .categotyId(newCategory.getCategotyId())
+                .categoryId(newCategory.getCategoryId())
                 .name(newCategory.getName())
                 .description(newCategory.getDescription())
                 .bgColor(newCategory.getBgColor())
@@ -50,7 +56,7 @@ public class CategoryServiceImpl implements CategoryService {
     private CategoryEntity convertToEntity(CategoryRequests request) {
 
         return CategoryEntity.builder()
-                .categotyId(UUID.randomUUID().toString())
+                .categoryId(UUID.randomUUID().toString())
                 .name(request.getName())
                 .description(request.getDescription())
                 .bgColor(request.getBgColor())
