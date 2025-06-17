@@ -7,6 +7,7 @@ import com.saksham.Billing.repository.CategoryRepository;
 import com.saksham.Billing.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Collections;
 import java.util.List;
@@ -19,7 +20,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
     @Override
-    public CategoryResponse add(CategoryRequests request) {
+    public CategoryResponse add(CategoryRequests request, MultipartFile file) {
         CategoryEntity newCategory = convertToEntity(request);
         newCategory = categoryRepository.save(newCategory);
         return convertToResponse(newCategory);

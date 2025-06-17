@@ -28,6 +28,8 @@ public class CategoryController {
         return categoryService.read();
     }
 
+
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{categoryId}")
     public void remove(@PathVariable String categoryId) {
         try{
