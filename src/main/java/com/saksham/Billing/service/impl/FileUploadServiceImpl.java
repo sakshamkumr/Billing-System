@@ -28,7 +28,7 @@ public class FileUploadServiceImpl implements FileUploadService {
             options.put("resource_type", "auto");
 
             Map uploadResult = cloudinary.uploader().upload(file.getBytes(), options);
-
+            System.out.println("Cloudinary Upload Result: " + uploadResult);
             return uploadResult.get("secure_url").toString();
         } catch (IOException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Image upload failed", e);
