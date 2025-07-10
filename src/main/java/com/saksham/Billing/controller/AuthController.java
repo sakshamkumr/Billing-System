@@ -35,10 +35,14 @@ public class AuthController {
     @PostMapping("/login")
     public AuthResponse login(@RequestBody AuthRequest request) throws Exception {
         authenticate(request.getEmail() , request.getPassword());
-        final UserDetails userDetails  = appUserDetailsService.loadUserByUsername(request.getEmail());
-        final String jwtToken = jwtUtil.generateToken(userDetails);
-        
+        System.out.println("pass1");
+
+        UserDetails userDetails  = appUserDetailsService.loadUserByUsername(request.getEmail());
+         String jwtToken = jwtUtil.generateToken(userDetails);
+        System.out.println("pass2");
         String role = userService.getUserRole(request.getEmail());
+        System.out.println("pass3");
+
         return new AuthResponse(userDetails.getUsername(), jwtToken , role);
     }
 
