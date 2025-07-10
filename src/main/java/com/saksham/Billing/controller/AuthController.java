@@ -37,8 +37,8 @@ public class AuthController {
         authenticate(request.getEmail() , request.getPassword());
         System.out.println("pass1");
 
-        UserDetails userDetails  = appUserDetailsService.loadUserByUsername(request.getEmail());
-         String jwtToken = jwtUtil.generateToken(userDetails);
+        final UserDetails userDetails  = appUserDetailsService.loadUserByUsername(request.getEmail());
+        final String jwtToken = jwtUtil.generateToken(userDetails);
         System.out.println("pass2");
         String role = userService.getUserRole(request.getEmail());
         System.out.println("pass3");
