@@ -1,7 +1,10 @@
 import logo from './Logo.jpg'
 import cloud from './cloud.jpg'
+import login from './Login.jpg'
+
 export const assets = {
     logo,
-    cloud
+    cloud,
+    login
 }
 export default assets;
