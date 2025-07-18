@@ -25,37 +25,38 @@ const CategoryForm = () => {
         setData((data)=> ({ ...data, [name]: value }));
     }
 
-    const onSubmitHandler = async(e) => {
-        e.preventDefault();
-
-        if(!image){
-            toast.error("Please select an image for the category");
-            return;
-        }
-        setLoading(true);
-        const formData = new FormData();
-        formData.append("category", JSON.stringify(data));
-        formData.append("file", image);
-        try{
-            const response = await addCategory(formData);
-            if(response.status === 201){
-                setCategories([...categories,response.data]);
-                toast.success("Category added");
-                setData({
-                    name: "",
-                    description: "",
-                    bgcolor: "#2c2c2c"
-                });
-                setImage(false);
-            }
-        }catch (err) {
-            console.error("Error response:", err.response?.data || err.message);
-            toast.error("Something went wrong while adding category");
-        }
-        finally{
-            setLoading(false);
-        }
+ const onSubmitHandler = async (e) => {
+    e.preventDefault();
+    if (!data.name || !image) {
+        toast.error("Please provide both name and image");
+        return;
     }
+
+    const category = {
+        name: data.name,
+        description: data.description,
+        bgcolor: data.bgcolor
+    };
+
+    const formData = new FormData();
+    formData.append("category", JSON.stringify(category)); // Backend expects `category` as JSON string
+    formData.append("file", image); // Backend expects `file` for MultipartFile
+
+    try {
+        setLoading(true);
+        const res = await addCategory(formData);
+        toast.success("Category added successfully!");
+        setData({ name: "", description: "", bgcolor: "#2c2c2c" }); // Reset form
+        setImage(null);
+        setCategories([...categories, res.data]); // Add newly created category to context
+    } catch (error) {
+        console.error(error);
+        toast.error("Failed to add category");
+    } finally {
+        setLoading(false);
+    }
+};
+
 
     return(
         <div className="mx-2 mt-2">
