@@ -16,7 +16,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
-
+//Pattern setup followed should be line
 @Component
 @RequiredArgsConstructor
 public class JwtRequestFilters extends OncePerRequestFilter {
