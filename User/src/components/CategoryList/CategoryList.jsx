@@ -57,7 +57,7 @@ const CategoryList = () => {
                                 </div>
                                 <div className="flex-grow-1">
                                     <h5 className="mb-1 text-white">{category.name}</h5>
-                                    <p className=" mb-0 text-white">{category.items}</p>
+                                    <p className=" mb-0 text-white">{category.items} items</p>
                                 </div>
                                 <div>
                                     <button
