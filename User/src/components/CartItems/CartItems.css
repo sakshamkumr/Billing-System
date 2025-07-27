@@ -1,0 +1,46 @@
+.cart-items-list {
+  position: relative;
+  padding-top: 1px; 
+}
+
+.cart-item {
+  background-color: #222326;            /* Slightly lighter for depth */
+  padding: 8px 12px;                    /* Less padding for compactness */
+  border-radius: 6px;                   /* Smaller corners */
+  margin-bottom: 10px;                  /* Reduced space below each card */
+  font-size: 0.97rem;                   /* Slightly smaller text */
+  box-shadow: 0 1px 8px rgba(0,0,0,0.08); /* Soft shadow for separation */
+  position: relative;
+  min-height: 46px;
+  transition: box-shadow 0.15s;
+}
+
+.cart-item:hover {
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+}
+
+.cart-items-list .cart-item:not(:first-child) {
+  margin-top: -14px;           /* Negative top margin for the “stacked” effect */
+  z-index: 2;
+}
+
+/* Optional: make first/last card have more spacing from container edges */
+.cart-items-list .cart-item:first-child {
+  margin-top: 0;
+}
+.cart-items-list .cart-item:last-child {
+  margin-bottom: 8px;
+}
+
+/* Responsive font for very small sidebars */
+@media (max-width: 500px) {
+  .cart-item {
+    font-size: 0.92rem;
+    padding: 7px 8px;
+  }
+}
+
+/* If you want to emphasize the “stacking”, optionally add a border */
+.cart-item {
+  border: 1px solid #36393f;
+}
