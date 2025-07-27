@@ -1,7 +1,9 @@
 package com.saksham.Billing.controller;
 
 import com.razorpay.RazorpayException;
+import com.saksham.Billing.io.OrderResponse;
 import com.saksham.Billing.io.PaymentRequest;
+import com.saksham.Billing.io.PaymentVerificationRequest;
 import com.saksham.Billing.io.RazorpayOrderResponse;
 import com.saksham.Billing.service.OrderService;
 import com.saksham.Billing.service.RazorpayService;
@@ -23,6 +25,10 @@ public class PaymentController {
         return razorpayService.createOrder(request.getAmount(), request.getCurrency());
     }
 
+    @PostMapping("/verify")
+    public OrderResponse verifyPayment(@RequestBody PaymentVerificationRequest request) {
+        return orderService.verifyPayment(request);
+    }
 
 
 }
