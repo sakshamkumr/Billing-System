@@ -5,7 +5,7 @@ export const latestOrders = async () => {
 }
 
 export const createOrder = async (order) => {
-    return await axios.post("http://localhost:8080/api/v1.0/orders",order,{headers:{'Authorization':`Bearer ${localStorage.getItem("token")}`}})
+    return await axios.post("http://localhost:8080/api/v1.0/orders/create",order,{headers:{'Authorization':`Bearer ${localStorage.getItem("token")}`}})
 }
 
 export const deleteOrder = async (id) => {

@@ -17,6 +17,7 @@ const CartSummary = ({customerName,setCustomerName,mobileNumber,setMobileNumber}
     const totalAmount = cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
     const tax = (totalAmount * 0.01)// 1% tax
     const grandTotal = (totalAmount + tax);
+
     const clearAll = () => {
         setCustomerName("");
         setMobileNumber("");
@@ -33,7 +34,7 @@ const CartSummary = ({customerName,setCustomerName,mobileNumber,setMobileNumber}
     const loadRazorpayScript = () => {
         return new Promise((resolve, reject) => {
             const script = document.createElement('script');
-            script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+            script.src = "https://checkout.razorpay.com/v1/checkout.js";
             script.onload = () => resolve(true);
             script.onerror = () => resolve(false);
             document.body.appendChild(script);
@@ -60,21 +61,22 @@ const CartSummary = ({customerName,setCustomerName,mobileNumber,setMobileNumber}
         }
         const orderData = {
             customerName,
-            phoneNumber:mobileNumber,
+            phoneNumber: mobileNumber,
             cartItems,
-            subtotal:totalAmount,
+            subtotal: totalAmount,
             tax,
             grandTotal,
-            paymentMethod:paymentMode.toUpperCase()
+            paymentMethod : paymentMode.toUpperCase()
         }
         setIsProcessing(true);
         try{
             const response = await createOrder(orderData);
-            const savedData = response
+            const savedData = response.data;
             if(response.status === 201 && paymentMode === "cash"){
                 toast.success("Cash Received");
-                setOrderDetails(response.data);
-            }else if (response.status === 201 && paymentMode === "upi"){
+                setOrderDetails(savedData);
+            }
+            else if (response.status === 201 && paymentMode === "upi"){
 
                 const razorpayLoaded = await loadRazorpayScript(paymentMode);
                 if(!razorpayLoaded){
@@ -83,10 +85,10 @@ const CartSummary = ({customerName,setCustomerName,mobileNumber,setMobileNumber}
                     return ;
                 }
                 // create razorpay order
-                const razorpayResponse = await createRazorpayOrder({amount:grandTotal , currency:'INR'});
+                const razorpayResponse = await createRazorpayOrder({amount: grandTotal , currency:'INR'});
                 const options = {
                     key: AppConstants.RAZORPAY_KEY_ID,
-                    amount: razorpayResponse.amount,
+                    amount: razorpayResponse.data.amount,
                     currency: razorpayResponse.data.currency,
                     order_id: razorpayResponse.data.id,
                     name: "My Retail Shop",
@@ -107,17 +109,17 @@ const CartSummary = ({customerName,setCustomerName,mobileNumber,setMobileNumber}
                             await deleteOrderOnFailure(savedData.orderId);
                             toast.error("Payment cancelled");
                         }
-                    }
+                    },
                 };
+            
                 const rzp = new window.Razorpay(options);
-                rzp.on("payment failed" , async (response) => {
+                rzp.on("payment.failed" , async (response) => {
                     await deleteOrderOnFailure(savedData.orderId);
                     toast.error("Payment failed");
                     console.error(response.error.description);
                 });
                 rzp.open();
             }
-
         }catch(error){
             console.error(error);
             toast.error("Payment Processing failed");
@@ -136,15 +138,16 @@ const CartSummary = ({customerName,setCustomerName,mobileNumber,setMobileNumber}
         try{
            const paymentResponse = await verifyPayment(paymentData); 
             if(paymentResponse.status === 200){
-                toast.success("payment successfull");
+                toast.success("payment successful");
                 setOrderDetails({
                     ...savedOrder,
                     paymentDetails : {
-                        razorpayOrderId : response.razorpay_order_id,
-                        razorpayPaymentId : response.razorpay_payment_id,
-                        razorpaySignature : response.razorpay_signature, 
-                    }
-                })
+                        //checker
+                        razorpayOrderId : PaymentResponse.razorpay_order_id,
+                        razorpayPaymentId : PaymentResponse.razorpay_payment_id,
+                        razorpaySignature : PaymentResponse.razorpay_signature, 
+                    },
+                });
             }else{
                 toast.error("payment Processing failed");
             }
