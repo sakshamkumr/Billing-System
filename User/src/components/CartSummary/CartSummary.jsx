@@ -1,13 +1,159 @@
 import './CartSummary.css';
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import { AppContext } from '../../context/AppContext.jsx';
-import ReceiptPopup from '../ReceiptPopup/ReceiptPopup.jsx';
+import { createOrder, deleteOrder } from '../../service/OrderService.js';
+import {createRazorpayOrder, verifyPayment} from '../../service/PaymentService.js';
+import toast from 'react-hot-toast';
+import { AppConstants } from '../../util/constant.js';
+
 
 const CartSummary = ({customerName,setCustomerName,mobileNumber,setMobileNumber}) => {
-    const {cartItems} = useContext(AppContext);
+    const {cartItems,clearCart} = useContext(AppContext);
+    const [isProcessing,setIsProcessing] = useState(false);
+    const [orderDetails , setOrderDetails] =useState(null);
+    const [showPopup , setShowPopup] = useState(false);
+    
+    
     const totalAmount = cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
     const tax = (totalAmount * 0.01)// 1% tax
     const grandTotal = (totalAmount + tax);
+    const clearAll = () => {
+        setCustomerName("");
+        setMobileNumber("");
+        clearCart();
+    }
+    const placeOrder = () => {
+        setShowPopup(true);
+        clearAll();
+    }
+    const HandlePrintReceipt = () => {
+        window.print();
+    }
+
+    const loadRazorpayScript = () => {
+        return new Promise((resolve, reject) => {
+            const script = document.createElement('script');
+            script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+            script.onload = () => resolve(true);
+            script.onerror = () => resolve(false);
+            document.body.appendChild(script);
+        })
+    }
+
+    const deleteOrderOnFailure = async(orderId) => {
+        try{
+            await deleteOrder(orderId);
+        } catch(error) {
+            console.error(error);
+            toast.error("Something went wrong")
+        }
+    }
+
+    const completePayment = async (paymentMode) => {
+        if(!customerName || !mobileNumber ) {
+            toast.error("Please fill customer details");
+            return;
+        }
+        if(cartItems.length === 0){
+            toast.error("Cart is empty");
+            return;
+        }
+        const orderData = {
+            customerName,
+            phoneNumber:mobileNumber,
+            cartItems,
+            subtotal:totalAmount,
+            tax,
+            grandTotal,
+            paymentMethod:paymentMode.toUpperCase()
+        }
+        setIsProcessing(true);
+        try{
+            const response = await createOrder(orderData);
+            const savedData = response
+            if(response.status === 201 && paymentMode === "cash"){
+                toast.success("Cash Received");
+                setOrderDetails(response.data);
+            }else if (response.status === 201 && paymentMode === "upi"){
+
+                const razorpayLoaded = await loadRazorpayScript(paymentMode);
+                if(!razorpayLoaded){
+                    toast.error("Unable to load razorpay");
+                    await deleteOrderOnFailure(savedData.orderId);
+                    return ;
+                }
+                // create razorpay order
+                const razorpayResponse = await createRazorpayOrder({amount:grandTotal , currency:'INR'});
+                const options = {
+                    key: AppConstants.RAZORPAY_KEY_ID,
+                    amount: razorpayResponse.amount,
+                    currency: razorpayResponse.data.currency,
+                    order_id: razorpayResponse.data.id,
+                    name: "My Retail Shop",
+                    description : "Order Payment",
+                    handler : async function (response) {
+                        // TODO : verify the payment
+                        await verifyPaymentHandler(response,savedData);
+                    },
+                    prefill : {
+                        name:customerName,
+                        contact:mobileNumber
+                    },
+                    theme : {
+                        color: "#3399cc"
+                    },
+                    modal : {
+                        ondismiss : async () => {
+                            await deleteOrderOnFailure(savedData.orderId);
+                            toast.error("Payment cancelled");
+                        }
+                    }
+                };
+                const rzp = new window.Razorpay(options);
+                rzp.on("payment failed" , async (response) => {
+                    await deleteOrderOnFailure(savedData.orderId);
+                    toast.error("Payment failed");
+                    console.error(response.error.description);
+                });
+                rzp.open();
+            }
+
+        }catch(error){
+            console.error(error);
+            toast.error("Payment Processing failed");
+        }finally{
+            setIsProcessing(false);
+        }
+    }
+
+    const verifyPaymentHandler = async (response , savedOrder)  => {
+        const paymentData = {
+            razorpayOrderId : response.razorpay_order_id,
+            razorpayPaymentId : response.razorpay_payment_id,
+            razorpaySignature : response.razorpay_signature,
+            orderId : savedOrder.orderId
+        };
+        try{
+           const paymentResponse = await verifyPayment(paymentData); 
+            if(paymentResponse.status === 200){
+                toast.success("payment successfull");
+                setOrderDetails({
+                    ...savedOrder,
+                    paymentDetails : {
+                        razorpayOrderId : response.razorpay_order_id,
+                        razorpayPaymentId : response.razorpay_payment_id,
+                        razorpaySignature : response.razorpay_signature, 
+                    }
+                })
+            }else{
+                toast.error("payment Processing failed");
+            }
+        }catch(error){
+            console.error(error);
+            toast.error("payment failed");
+        }
+    };
+
     return (
         <div className="mt-2">
             <div className="cart-summary-details">
@@ -25,15 +171,24 @@ const CartSummary = ({customerName,setCustomerName,mobileNumber,setMobileNumber}
                 </div>
 
                 <div className="d-flex gap-3">
-                    <button className="btn btn-success flex-grow-1">
-                        Cash
+                    <button className="btn btn-success flex-grow-1"
+                        onClick={() => completePayment("cash")}
+                        disabled={isProcessing}
+                    >
+                        {isProcessing ? "Processing..." : "Cash"}
                     </button>
-                    <button className="btn btn-primary flex-grow-1">
-                        UPI
+                    <button className="btn btn-primary flex-grow-1"
+                        onClick={() => completePayment("upi")}
+                        disabled={isProcessing}
+                    >
+                        {isProcessing ? "Processing..." : "UPI"}
                     </button>
                 </div>
                 <div className="d-flex gap-3 mt-3">
-                    <button className="btn btn-warning flex-grow-1">
+                    <button className="btn btn-warning flex-grow-1"
+                        onClick={placeOrder}
+                        disabled={isProcessing || !orderDetails}
+                    >
                         Place Order
                     </button>
                 </div>

@@ -55,6 +55,10 @@ export const AppContextProvider = (props)=>{
         localStorage.setItem("token", token);
         localStorage.setItem("role", role);
     }
+
+    const clearCart = () => {
+        setCartItems([]);
+    }
     const contextValue = {
         categories,
         setCategories,
@@ -65,7 +69,8 @@ export const AppContextProvider = (props)=>{
         addToCart,
         cartItems,
         removeFromCart,
-        updateQuantity
+        updateQuantity,
+        clearCart
 
     }
     return <AppContext.Provider value={contextValue}>
