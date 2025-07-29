@@ -66,7 +66,7 @@ const CategoryForm = () => {
                         <form onSubmit = {onSubmitHandler}>
                             <div className="mb-3">
                                 <label htmlFor="image" className="form-label">
-                                    <img src={image ? URL.createObjectURL(image):assets.cloud} alt="" width={48}/>
+                                    <img src={image ? URL.createObjectURL(image):assets.UploadImg} alt="" width={48}/>
                                 </label>
                                 <input type="file" name="image" id="image" className="form-control" hidden onChange={(e) => setImage(e.target.files[0])} />
                             </div>

@@ -5,7 +5,7 @@ import { createOrder, deleteOrder } from '../../service/OrderService.js';
 import {createRazorpayOrder, verifyPayment} from '../../service/PaymentService.js';
 import toast from 'react-hot-toast';
 import { AppConstants } from '../../util/constant.js';
-
+import ReceiptPopup from '../ReceiptPopup/ReceiptPopup.jsx';
 
 const CartSummary = ({customerName,setCustomerName,mobileNumber,setMobileNumber}) => {
     const {cartItems,clearCart} = useContext(AppContext);
@@ -195,6 +195,11 @@ const CartSummary = ({customerName,setCustomerName,mobileNumber,setMobileNumber}
                         Place Order
                     </button>
                 </div>
+                {
+                    showPopup && (
+                        <ReceiptPopup/>
+                    )
+                }
                 
             </div>
         </div>
