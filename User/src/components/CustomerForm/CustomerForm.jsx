@@ -24,6 +24,7 @@ const CustomerForm = ({ customerName, setCustomerName, mobileNumber, setMobileNu
               value={customerName}
               onChange={(e) => setCustomerName(e.target.value)}
               style={{ flex: 1, minWidth: 0 }}
+              required
             />
           </div>
         </div>
@@ -43,6 +44,7 @@ const CustomerForm = ({ customerName, setCustomerName, mobileNumber, setMobileNu
               value={mobileNumber}
               onChange={(e) => setMobileNumber(e.target.value)}
               style={{ flex: 1, minWidth: 0 }}
+              required
             />
           </div>
         </div>

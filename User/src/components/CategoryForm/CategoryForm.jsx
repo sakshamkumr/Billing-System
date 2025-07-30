@@ -80,6 +80,7 @@ const CategoryForm = () => {
                                     placeholder="Category name"
                                     onChange={onChangeHandler}
                                     value={data.name}
+                                    required
                                     
                                  />
                                     
@@ -105,6 +106,7 @@ const CategoryForm = () => {
                                     onChange={onChangeHandler}
                                     value={data.bgcolor} 
                                     placeholder="#ffffff" 
+                                    
                                 />       
                             </div>
                             <button type="submit" 
