@@ -26,7 +26,6 @@ public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
 
     private final FileUploadService fileUploadService;
-    private final CategoryRepository CategoryRepository;
     private final CategoryRepository categoryRepository;
 
     @Override
