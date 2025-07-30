@@ -197,7 +197,16 @@ const CartSummary = ({customerName,setCustomerName,mobileNumber,setMobileNumber}
                 </div>
                 {
                     showPopup && (
-                        <ReceiptPopup/>
+                        <ReceiptPopup
+                            orderDetails={{
+                                ...orderDetails,
+                                razorpayOrderId:orderDetails.paymentDetails?.razorpayOrderId,
+                                razorpayPaymentId:orderDetails.paymentDetails?.razorpayPaymentId,
+                            }}
+                            onClose={() => setShowPopup(false)}
+                            onPrint={HandlePrintReceipt}
+
+                        />
                     )
                 }
                 

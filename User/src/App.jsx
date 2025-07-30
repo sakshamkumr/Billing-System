@@ -7,6 +7,7 @@ import ManageUser from "./pages/ManageUsers/ManageUser.jsx";
 import { Routes, Route, useLocation } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import Login from "./pages/Login/Login.jsx";
+import OrderHistory from "./pages/OrderHistory/OrderHistory.jsx";
 
 const App = () => {
     const location = useLocation();
@@ -21,7 +22,9 @@ const App = () => {
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/explore" element={<Explore/>} />
                 <Route path="/login" element={<Login />} />
+                <Route path="/orders" element={<OrderHistory />} />
                 <Route path="/" element={<Dashboard />} />
+
             </Routes>
         
         
