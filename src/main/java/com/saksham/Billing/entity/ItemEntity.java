@@ -48,6 +48,6 @@ public class ItemEntity {
     @JoinColumn(name = "category_id",nullable = false)
     @OnDelete(action = OnDeleteAction.RESTRICT)
     private CategoryEntity category;
-
+    
 
 }
