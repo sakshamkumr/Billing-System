@@ -1,6 +1,8 @@
 {
   "dependencies": {
     "axios": "^1.10.0",
-    "bootstrap-icons": "^1.13.1"
+    "bootstrap-icons": "^1.13.1",
+    "react-tilt": "^1.0.2",
+    "react-typed": "^2.0.12"
   }
 }
